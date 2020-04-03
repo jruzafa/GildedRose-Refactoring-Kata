@@ -21,69 +21,22 @@ final class GildedRose {
 
             switch ($item->name){
 
+                case self::SULFURAS_HAND_OF_RAGNAROS:
+                    break;
+
                 case self::BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT:
                     $this->decreaseSellIn($item);
-
-                    if ($item->quality < self::MAX_QUALITY) {
-
-                        $this->increaseQuality($item);
-
-                        if ($item->sell_in < 11) {
-                            if ($item->quality < self::MAX_QUALITY) {
-                                $this->increaseQuality($item);
-                            }
-                        }
-
-                        if ($item->sell_in < 6) {
-                            if ($item->quality < self::MAX_QUALITY) {
-                                $this->increaseQuality($item);
-                            }
-                        }
-                    }
-                    
-                    if ($item->sell_in < 0) {
-                        if ($item->name != self::AGED_BRIE) {
-                            $this->resetQuality($item);
-                        }
-                    }
-
+                    $this->updateBackstagePassesQuality($item);
                     break;
 
                 case self::AGED_BRIE:
                     $this->decreaseSellIn($item);
-
-                    if ($item->quality < self::MAX_QUALITY) {
-                        $this->increaseQuality($item);
-                    }
-
-                    if ($item->sell_in < 0) {
-                        if ($item->quality < self::MAX_QUALITY) {
-                            $this->increaseQuality($item);
-                        }
-                    }
-
+                    $this->updateAgedBrieQuality($item);
                     break;
 
-
-                case self::SULFURAS_HAND_OF_RAGNAROS:
-                    break;
-
-                default: // Conjured or others
-                    $this->decreaseQuality($item);
+                default: // Conjured or others types of items
                     $this->decreaseSellIn($item);
-
-                    if ($item->sell_in < 0) {
-                        if ($item->name != self::AGED_BRIE) {
-                            if ($item->name != self::BACKSTAGE_PASSES_TO_A_TAFKAL_80_ETC_CONCERT) {
-                                if ($item->quality > self::MIN_QUALITY) {
-                                    if ($item->name != self::SULFURAS_HAND_OF_RAGNAROS) {
-                                        $this->decreaseQuality($item);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
+                    $this->updateDefaultItemQuality($item);
                     break;
             }
 
@@ -95,7 +48,9 @@ final class GildedRose {
      */
     private function decreaseQuality( $item )
     {
-        $item->quality -= 1;
+        if ($item->quality > self::MIN_QUALITY) {
+            $item->quality -= 1;
+        }
     }
 
     /**
@@ -103,7 +58,11 @@ final class GildedRose {
      */
     private function increaseQuality( $item )
     {
-        $item->quality += 1;
+
+        if ($item->quality < self::MAX_QUALITY) {
+            $item->quality += 1;
+        }
+
     }
 
     /**
@@ -120,6 +79,51 @@ final class GildedRose {
     private function resetQuality( $item )
     {
         $item->quality = 0;
+    }
+
+    /**
+     * @param $item
+     */
+    private function updateBackstagePassesQuality( $item )
+    {
+        $this->increaseQuality($item);
+
+        if ($item->sell_in < 11) {
+            $this->increaseQuality($item);
+        }
+
+        if ($item->sell_in < 6) {
+            $this->increaseQuality($item);
+        }
+
+        if ($item->sell_in < 0) {
+            $this->resetQuality($item);
+        }
+    }
+
+    /**
+     * @param $item
+     */
+    private function updateAgedBrieQuality( $item )
+    {
+        $this->increaseQuality($item);
+
+        if ($item->sell_in < 0) {
+            $this->increaseQuality($item);
+        }
+
+    }
+
+    /**
+     * @param $item
+     */
+    private function updateDefaultItemQuality( $item )
+    {
+        $this->decreaseQuality($item);
+
+        if ($item->sell_in < 0) {
+            $this->decreaseQuality($item);
+        }
     }
 }
 
