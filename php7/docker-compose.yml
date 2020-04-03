@@ -1,0 +1,8 @@
+version: '3'
+services:
+  webserver:
+    image: chialab/php:7.2-fpm
+    ports:
+      - "6060:80"
+    volumes:
+      - ./:/var/www/html
