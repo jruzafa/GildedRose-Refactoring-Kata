@@ -46,10 +46,10 @@ final class GildedRose {
     /**
      * @param $item
      */
-    private function decreaseQuality( $item )
+    private function decreaseQuality( $item , $qtyToDecrease = 1 )
     {
         if ($item->quality > self::MIN_QUALITY) {
-            $item->quality -= 1;
+            $item->quality -= $qtyToDecrease;
         }
     }
 
@@ -119,7 +119,7 @@ final class GildedRose {
      */
     private function updateDefaultItemQuality( $item )
     {
-        $this->decreaseQuality($item);
+        $this->decreaseQuality($item, 2);
 
         if ($item->sell_in < 0) {
             $this->decreaseQuality($item);
